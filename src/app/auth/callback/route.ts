@@ -31,5 +31,6 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(requestUrl.origin)
+  // Redirect to the chat page after successful login
+  return NextResponse.redirect(`${requestUrl.origin}/chat`)
 }
