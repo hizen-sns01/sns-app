@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { generateGeminiResponse } from '@/lib/gemini/client';
 
 type GeminiModel = 'gemini-2.5-flash-live' | 'gemini-2.0-flash-lite' | 'gemini-2.5-flash-lite';
@@ -16,6 +16,13 @@ export default function ChatComponent() {
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedModel, setSelectedModel] = useState<GeminiModel>('gemini-2.5-flash-live');
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +90,7 @@ export default function ChatComponent() {
         </div>
         
         {/* Chat history */}
-        <div className="h-[400px] overflow-y-auto p-4 space-y-4">
+        <div ref={chatContainerRef} className="h-[400px] overflow-y-auto p-4 space-y-4">
           {chatHistory.map((msg, index) => (
             <div
               key={index}

@@ -1,18 +1,41 @@
 'use client'
 
-import { supabase } from '@/lib/supabase/client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const router = useRouter()
+  const supabase = createClientComponentClient()
 
-  const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${location.origin}/auth/callback`
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        router.push('/chat')
       }
     })
+
+    return () => subscription.unsubscribe()
+  }, [router, supabase])
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${location.origin}/auth/callback`,
+          skipBrowserRedirect: false
+        }
+      })
+      if (error) {
+        throw error
+      }
+    } catch (err) {
+      console.error('Google 로그인 오류:', err)
+      alert('로그인 중 오류가 발생했습니다.')
+    }
   }
 
   return (

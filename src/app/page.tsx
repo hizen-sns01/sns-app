@@ -1,11 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export default function Home() {
   const router = useRouter();
-  const supabase = createClient();
 
   const handleGoogleLogin = async () => {
     try {
